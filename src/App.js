@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { Box } from "@mui/system";
+import { Grid, Typography, Toolbar } from "@mui/material";
+import "./App.css";
+import CalculateIcon from '@mui/icons-material/Calculate';
+import Calculator from "./components/Calculator";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box className="body">
+      <Toolbar className="header" variant="navbar" sx={{ justifyContent: "center", padding: 2 }}>
+        <CalculateIcon fontSize="large"/>
+        <Typography variant="h4" marginLeft={5}>React Calculator App</Typography>
+      </Toolbar>
+      <Box className="main" justifyContent="center">
+        <Calculator />
+      </Box>
+    </Box>
   );
 }
-
 export default App;
