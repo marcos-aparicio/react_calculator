@@ -1,7 +1,6 @@
-import { Box } from "@mui/system";
-import { Grid, Paper, Toolbar } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 
-const size = 20;
+// const size = 20;
 
 const Tile = (props) => {
   return (
