@@ -10,8 +10,12 @@ const Tile = (props) => {
       className={`tile ${props.className !== undefined ? props.className: ''} user-select-none`}
     >
       <Paper
-      sx={tileStyles}
-      onClick={()=>{console.log(props.token)}}
+      sx={[ tileStyles,props.sx ]}
+      onClick={()=>{
+        if(props.className !== undefined) return;
+
+        console.log(props.token);
+      }}
       >
       {props.token}
       </Paper>

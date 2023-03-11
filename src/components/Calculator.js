@@ -1,9 +1,12 @@
 import { Box } from "@mui/system";
 import { Grid } from "@mui/material";
 import Tile from "./Tile";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 const Calculator = () => {
+  const [ operations, setOperations ] = useState("");
+
+
   return (
     <Box
       className="calculator"
@@ -16,29 +19,29 @@ const Calculator = () => {
       }}
       gap={1.5}
     >
-      <Box className="output"
-      sx={outputStyles}
-      >
-      hello world
-      </Box>
-      <Grid className="numbers&equal"
+      <Grid className="numbers&equal&output"
         container
         spacing={1.5}
         sx={numStyles}
         flexGrow={1}
-        // flexBasis={300}
       >
+        <Tile xs={12} className="output" sx={{
+          justifyContent:'end'
+        }}/>
         <Tile token="1" xs={4} />
         <Tile token="2" xs={4} />
         <Tile token="3" xs={4} />
+
         <Tile token="4" xs={4} />
         <Tile token="5" xs={4} />
         <Tile token="6" xs={4} />
+
         <Tile token="7" xs={4} />
         <Tile token="8" xs={4} />
         <Tile token="9" xs={4} />
+
         <Tile token="0" xs={6} />
-        <Tile token="=" xs={6} />
+        <Tile token="=" className="equal" xs={6} />
       </Grid>
       <Grid className="operations"
         container
@@ -63,17 +66,18 @@ const numStyles = {
   width: sizeNum,
 };
 
-const operStyles = {};
+// const operStyles = {};
 
+let borderColor = "#2c2727";
+let bgColor = "rgb(67, 62, 62)";
 const outputStyles = {
   display: "flex",
   justifyContent: "center",
-  backgroundColor:"rgb(67, 62, 62)",
   alignItems: "center",
+  border: `5px solid ${borderColor}`,
+  backgroundColor: bgColor,
   fontSize:25,
-  padding: 2.5,
   textAlign: "center",
   borderRadius: 5,
 };
-
 export default Calculator;
