@@ -1,8 +1,13 @@
 import { Grid, Paper } from "@mui/material";
+import { useContext } from "react";
+import { CalculatorContext } from "./Calculator";
 
 // const size = 20;
 
 const Tile = (props) => {
+  const { operations,setOperations } = useContext(CalculatorContext);
+  
+
   return (
     <Grid
       xs = {props.xs}
@@ -12,9 +17,9 @@ const Tile = (props) => {
       <Paper
       sx={[ tileStyles,props.sx ]}
       onClick={()=>{
-        if(props.className !== undefined) return;
+        if(props.className === undefined) setOperations(operations+props.token);
 
-        console.log(props.token);
+
       }}
       >
       {props.token}
