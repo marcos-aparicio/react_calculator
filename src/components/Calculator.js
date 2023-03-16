@@ -1,18 +1,94 @@
 import { Box } from "@mui/system";
 import { Grid } from "@mui/material";
 import Tile from "./Tile";
-import React, { useState, createContext } from "react";
+import React, { useState } from "react";
+import Stack from "../data_structures/Stack";
 
 export const CalculatorContext = React.createContext();
+const operationsRegex = /^(-|\+|\*|\/|÷|(mod))$/;
 
-
+//flujo
+// operationstack -> realOperationStack -> parsing
 
 const Calculator = () => {
-  const [ operations, setOperations ] = useState("");
+  const [operations, setOperations] = useState("");
+  const [operationStack] = useState(new Stack());
+  const [canInsertSymbol, setCanInsertSymbol] = useState(false);
+  const [symbolToInsert, setSymbolToInsert] = useState("");
 
+  const insertToken = (token) => {
+    if (token === "clear") {
+      setOperations("");
+      return;
+    }
+    if (token === "=") {
+      parse();
+      return;
+    }
+    //handling two operations together (thrown an error)
+
+    setOperations(operations + token);
+    // let prevToken = operationStack.peek();
+
+    // //first input
+    // if (prevToken === null && /^\d+$/.test(token)) {
+    //   operationStack.push(parseInt(token));
+    //   setCanInsertSymbol(true);
+    //   return;
+    // }
+
+    // if (typeof prevToken === "number" && /^\d+$/.test(token)) {
+    //   prevToken = prevToken.toString() + token;
+    //   operationStack.pop();
+    //   operationStack.push(parseInt(prevToken));
+    //   return;
+    // }
+    // if (typeof prevToken === "number" && !/^\d+$/.test(token)) {
+    //   operationStack.push(token);
+    //   return;
+    // }
+    // if (typeof prevToken === "string" && /^\d+$/.test(token)) {
+    //   operationStack.push(parseInt(prevToken));
+    //   return;
+    // }
+  };
+  const parse = () => {
+    let currOperations = operations;
+    let matchNumberRgx = /^\d+/;
+    let matchSymbolRgx = /^(x|\+|÷|mod|clear|-)/;
+    let numberCount = 0;
+
+    while (currOperations.length > 0) {
+
+      let match = (currOperations.match(matchNumberRgx) !== null) ? parseInt(currOperations.match(matchNumberRgx)[0]) : currOperations.match(matchSymbolRgx)[0];
+
+
+      let prevToken = operationStack.peek();
+
+      if(prevToken === null && typeof(match) === 'number' || typeof(prevToken) === 'string'){
+        operationStack.push(match[0]);
+        numberCount++;
+      }
+      if(prevToken === null && typeof(match) === 'string') return;
+
+      if(typeof(prevToken) === 'number' && numberCount === 1){
+        operationStack.push(match[0]);
+        numberCount = 0;
+      }
+
+
+
+
+
+      currOperations = currOperations.substring(
+        match[0].length,
+        currOperations.length
+      );
+    }
+  };
 
   return (
-    <CalculatorContext.Provider value={{operations, setOperations}}>
+    <CalculatorContext.Provider value={{ insertToken }}>
       <Box
         className="calculator"
         maxHeight="80vh"
@@ -20,22 +96,28 @@ const Calculator = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          flexWrap:'wrap'
+          flexWrap: "wrap",
         }}
         gap={1.5}
       >
-        <Grid className="numbers&equal&output"
+        <Grid
+          className="numbers&equal&output"
           container
           spacing={1.5}
           sx={numStyles}
           flexGrow={1}
         >
-          <Tile xs={12} className="output" token={operations} sx={{
-            // boxSizing:'content-box',
-            justifyContent:'end',
-            paddingTop: operations !== "" ? 0 : 2.5,
-            paddingBottom: operations !== "" ? 0 : 2.5
-          }}/>
+          <Tile
+            xs={12}
+            className="output"
+            token={operations}
+            sx={{
+              // boxSizing:'content-box',
+              justifyContent: "end",
+              paddingTop: operations !== "" ? 0 : 2.5,
+              paddingBottom: operations !== "" ? 0 : 2.5,
+            }}
+          />
           <Tile token="1" xs={4} />
           <Tile token="2" xs={4} />
           <Tile token="3" xs={4} />
@@ -49,16 +131,17 @@ const Calculator = () => {
           <Tile token="9" xs={4} />
 
           <Tile token="0" xs={6} />
-          <Tile token="=" className="equal" xs={6} />
+          <Tile token="=" xs={6} />
         </Grid>
-        <Grid className="operations"
+        <Grid
+          className="operations"
           container
           flexGrow={1}
           height={sizeNum}
           spacing={1.5}
           width={sizeNum * 0.2}
         >
-          <Tile token="clear" xs={12} className="clear"/>
+          <Tile token="clear" xs={12} />
           <Tile token="+" xs={12} />
           <Tile token="-" xs={12} />
           <Tile token="x" xs={12} />
@@ -86,7 +169,7 @@ const outputStyles = {
   alignItems: "center",
   border: `5px solid ${borderColor}`,
   backgroundColor: bgColor,
-  fontSize:25,
+  fontSize: 25,
   textAlign: "center",
   borderRadius: 5,
 };

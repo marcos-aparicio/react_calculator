@@ -5,7 +5,7 @@ import { CalculatorContext } from "./Calculator";
 // const size = 20;
 
 const Tile = (props) => {
-  const { operations,setOperations } = useContext(CalculatorContext);
+  const { insertToken } = useContext(CalculatorContext);
   
 
   return (
@@ -17,9 +17,7 @@ const Tile = (props) => {
       <Paper
       sx={[ tileStyles,props.sx ]}
       onClick={()=>{
-        if(props.className === undefined) setOperations(operations+props.token);
-
-
+        if(props.className === undefined) insertToken(props.token)
       }}
       >
       {props.token}
