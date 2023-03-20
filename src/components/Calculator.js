@@ -11,92 +11,75 @@ const operationsRegex = /^(-|\+|\*|\/|÷|(mod))$/;
 // operationstack -> realOperationStack -> parsing
 
 const Calculator = () => {
-  const [operations, setOperations] = useState("");
+  const [operationOutput, setOperationOutput] = useState("");
   const [operationStack] = useState(new Stack());
-  const [canInsertSymbol, setCanInsertSymbol] = useState(false);
-  const [symbolToInsert, setSymbolToInsert] = useState("");
+
+  const operationFunctions = {
+    "+": (num1, num2) => num1 + num2,
+    "-": (num1, num2) => num1 - num2,
+    x: (num1, num2) => num1 * num2,
+    "÷": (num1, num2) => num1 / num2,
+    mod: (num1, num2) => num1 % num2,
+  };
 
   const insertToken = (token) => {
-    if (token === "clear") {
-      setOperations("");
-      return;
+    
+    const scenarios = {
+      "clear": ()=> setOperationOutput(""),
+      "=":()=> parse(),
     }
-    if (token === "=") {
-      parse();
-      return;
-    }
-    //handling two operations together (thrown an error)
+    const defaultScenario = () => setOperationOutput(operationOutput + token);
 
-    setOperations(operations + token);
-    // let prevToken = operationStack.peek();
-
-    // //first input
-    // if (prevToken === null && /^\d+$/.test(token)) {
-    //   operationStack.push(parseInt(token));
-    //   setCanInsertSymbol(true);
-    //   return;
-    // }
-
-    // if (typeof prevToken === "number" && /^\d+$/.test(token)) {
-    //   prevToken = prevToken.toString() + token;
-    //   operationStack.pop();
-    //   operationStack.push(parseInt(prevToken));
-    //   return;
-    // }
-    // if (typeof prevToken === "number" && !/^\d+$/.test(token)) {
-    //   operationStack.push(token);
-    //   return;
-    // }
-    // if (typeof prevToken === "string" && /^\d+$/.test(token)) {
-    //   operationStack.push(parseInt(prevToken));
-    //   return;
-    // }
+    const actualFunction = scenarios[token] || defaultScenario;
+    actualFunction();
   };
   const parse = () => {
-    let currOperations = operations;
+    let currOperations = operationOutput;
     let matchNumberRgx = /^\d+/;
     let matchSymbolRgx = /^(x|\+|÷|mod|clear|-)/;
     let nextSymbol;
 
+    //adding the tokens to the operation stack
     while (currOperations.length > 0) {
+      let match =
+        currOperations.match(matchNumberRgx) !== null
+          ? parseInt(currOperations.match(matchNumberRgx)[0])
+          : currOperations.match(matchSymbolRgx)[0];
 
-      let match = (currOperations.match(matchNumberRgx) !== null) ? parseInt(currOperations.match(matchNumberRgx)[0]) : currOperations.match(matchSymbolRgx)[0];
-      let matchLength = (currOperations.match(matchNumberRgx) !== null) ? currOperations.match(matchNumberRgx)[0].length : currOperations.match(matchSymbolRgx)[0].length;
+      let matchLength =
+        currOperations.match(matchNumberRgx) !== null
+          ? currOperations.match(matchNumberRgx)[0].length
+          : currOperations.match(matchSymbolRgx)[0].length;
 
-      //TODO: CHANGE the conditional so it doesn't use prevtoken
+      if (typeof match === "number") {
+        operationStack.push(match);
 
+        if (nextSymbol !== undefined) operationStack.push(nextSymbol);
 
-      if(typeof(match) === 'number'){
-        operationStack.push(match)
-        
-        if(nextSymbol !== undefined) operationStack.push(nextSymbol);
         nextSymbol = undefined;
       }
 
-      if(typeof(match) === 'string'){
-        nextSymbol = match;
-      }
-      
+      if (typeof match === "string") nextSymbol = match;
 
       currOperations = currOperations.substring(matchLength);
     }
 
-    let operationFunctions = {
-      '+':(num1,num2) => num1+num2,
-      '-':(num1,num2) => num1-num2,
-      'x':(num1,num2) => num1*num2,
-      '÷':(num1,num2) => num1/num2,
-    };
+    if (typeof operationStack.peek() === "number") {
+      operationStack.deleteAll();
+      return;
+    }
 
     let output = 0;
-    while(operationStack.size() !== 0){
+
+    //actually calculating
+    while (operationStack.size() !== 0) {
       let symbol = operationStack.pop();
       let num2 = operationStack.pop();
       let num1 = operationStack.pop();
 
-      output += operationFunctions[symbol](num1,num2);
+      output += operationFunctions[symbol](num1, num2);
     }
-    setOperations(output);
+    setOperationOutput(output);
   };
 
   return (
@@ -122,12 +105,12 @@ const Calculator = () => {
           <Tile
             xs={12}
             className="output"
-            token={operations}
+            token={operationOutput}
             sx={{
               // boxSizing:'content-box',
               justifyContent: "end",
-              paddingTop: operations !== "" ? 0 : 2.5,
-              paddingBottom: operations !== "" ? 0 : 2.5,
+              paddingTop: operationOutput !== "" ? 0 : 2.5,
+              paddingBottom: operationOutput !== "" ? 0 : 2.5,
             }}
           />
           <Tile token="1" xs={4} />

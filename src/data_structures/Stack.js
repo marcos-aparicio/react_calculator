@@ -4,6 +4,11 @@ export default class Stack {
     this.count = 0;
   }
 
+  deleteAll(){
+    this.first = null;
+    this.count = 0;
+  }
+
   peek() {
     return this.first == null ? null : this.first.value;
   }
