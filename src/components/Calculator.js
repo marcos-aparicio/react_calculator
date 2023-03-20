@@ -56,35 +56,47 @@ const Calculator = () => {
     let currOperations = operations;
     let matchNumberRgx = /^\d+/;
     let matchSymbolRgx = /^(x|\+|÷|mod|clear|-)/;
-    let numberCount = 0;
+    let nextSymbol;
 
     while (currOperations.length > 0) {
 
       let match = (currOperations.match(matchNumberRgx) !== null) ? parseInt(currOperations.match(matchNumberRgx)[0]) : currOperations.match(matchSymbolRgx)[0];
+      let matchLength = (currOperations.match(matchNumberRgx) !== null) ? currOperations.match(matchNumberRgx)[0].length : currOperations.match(matchSymbolRgx)[0].length;
+
+      //TODO: CHANGE the conditional so it doesn't use prevtoken
 
 
-      let prevToken = operationStack.peek();
-
-      if(prevToken === null && typeof(match) === 'number' || typeof(prevToken) === 'string'){
-        operationStack.push(match[0]);
-        numberCount++;
-      }
-      if(prevToken === null && typeof(match) === 'string') return;
-
-      if(typeof(prevToken) === 'number' && numberCount === 1){
-        operationStack.push(match[0]);
-        numberCount = 0;
+      if(typeof(match) === 'number'){
+        operationStack.push(match)
+        
+        if(nextSymbol !== undefined) operationStack.push(nextSymbol);
+        nextSymbol = undefined;
       }
 
+      if(typeof(match) === 'string'){
+        nextSymbol = match;
+      }
+      
 
-
-
-
-      currOperations = currOperations.substring(
-        match[0].length,
-        currOperations.length
-      );
+      currOperations = currOperations.substring(matchLength);
     }
+
+    let operationFunctions = {
+      '+':(num1,num2) => num1+num2,
+      '-':(num1,num2) => num1-num2,
+      'x':(num1,num2) => num1*num2,
+      '÷':(num1,num2) => num1/num2,
+    };
+
+    let output = 0;
+    while(operationStack.size() !== 0){
+      let symbol = operationStack.pop();
+      let num2 = operationStack.pop();
+      let num1 = operationStack.pop();
+
+      output += operationFunctions[symbol](num1,num2);
+    }
+    setOperations(output);
   };
 
   return (

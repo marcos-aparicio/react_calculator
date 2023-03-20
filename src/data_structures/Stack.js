@@ -13,19 +13,34 @@ export default class Stack {
   }
 
   push(element) {
-    this.first =
-      this.first === null
-        ? new Node(element, null)
-        : new Node(element, this.first);
 
+    if(this.size() === 0) this.first = new Node(element,null);
+    
+    this.first = new Node(element,this.first);
     this.count++;
   }
 
   pop() {
-    if (this.first === null) return null;
-
+    if (this.size() === 0 ) return null;
+    
+    let top = this.first.value;
+    this.first = this.first.next;
     this.count--;
+    return top;
   }
+
+  toString(){
+    let node = this.first;
+    let string = "["
+    while(node != null){
+      string += `${node.value}, `
+      node = node.next;
+    }
+    string += "]";
+
+    return string;
+  }
+
 }
 
 class Node {
