@@ -23,6 +23,9 @@ const Calculator = () => {
     
     const scenarios = {
       "clear": ()=> setOperationOutput(""),
+      "🡠": ()=> {
+        setOperationOutput(operationOutput.slice(0,-1));
+      },
       "=":()=> parse(),
     }
     const defaultScenario = () => setOperationOutput(operationOutput + token);
@@ -76,7 +79,7 @@ const Calculator = () => {
 
       output += operationFunctions[symbol](num1, num2);
     }
-    setOperationOutput(output);
+    setOperationOutput(output.toString());
   };
 
   return (
@@ -133,6 +136,7 @@ const Calculator = () => {
           spacing={1.5}
           width={sizeNum * 0.2}
         >
+          <Tile token="🡠" xs={12}></Tile>
           <Tile token="clear" xs={12} />
           <Tile token="+" xs={12} />
           <Tile token="-" xs={12} />
