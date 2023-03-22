@@ -5,10 +5,7 @@ import React, { useState } from "react";
 import Stack from "../data_structures/Stack";
 
 export const CalculatorContext = React.createContext();
-const operationsRegex = /^(-|\+|\*|\/|÷|(mod))$/;
 
-//flujo
-// operationstack -> realOperationStack -> parsing
 
 const Calculator = () => {
   const [operationOutput, setOperationOutput] = useState("");
