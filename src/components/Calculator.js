@@ -18,19 +18,18 @@ const Calculator = () => {
     "÷": (num1, num2) => num1 / num2,
     mod: (num1, num2) => num1 % num2,
   };
+  //non operational scenarios
+  const nonOperationFunctions = {
+    "clear": ()=> setOperationOutput(""),
+    "🡠": ()=> setOperationOutput(operationOutput.slice(0,-1)),
+    "=":()=> parse(),
+  }
 
   const insertToken = (token) => {
     
-    const scenarios = {
-      "clear": ()=> setOperationOutput(""),
-      "🡠": ()=> {
-        setOperationOutput(operationOutput.slice(0,-1));
-      },
-      "=":()=> parse(),
-    }
     const defaultScenario = () => setOperationOutput(operationOutput + token);
 
-    const actualFunction = scenarios[token] || defaultScenario;
+    const actualFunction = nonOperationFunctions[token] || defaultScenario;
     actualFunction();
   };
   const parse = () => {
@@ -51,15 +50,13 @@ const Calculator = () => {
           ? currOperations.match(matchNumberRgx)[0].length
           : currOperations.match(matchSymbolRgx)[0].length;
 
+      if (typeof match === "string") nextSymbol = match;
+
       if (typeof match === "number") {
         operationStack.push(match);
-
         if (nextSymbol !== undefined) operationStack.push(nextSymbol);
-
         nextSymbol = undefined;
       }
-
-      if (typeof match === "string") nextSymbol = match;
 
       currOperations = currOperations.substring(matchLength);
     }
@@ -90,8 +87,8 @@ const Calculator = () => {
         margin={2}
         sx={{
           display: "flex",
-          flexDirection: "column",
-          flexWrap: "wrap",
+          flexDirection: "row",
+          // flexWrap: "wrap",
         }}
         gap={1.5}
       >
@@ -128,22 +125,31 @@ const Calculator = () => {
           <Tile token="0" xs={6} />
           <Tile token="=" xs={6} />
         </Grid>
-        <Grid
+        <Box
           className="operations"
-          container
           flexGrow={1}
           height={sizeNum}
           spacing={1.5}
           width={sizeNum * 0.2}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            width:'50px',
+            gap:'10px',
+            flexWrap: 'wrap'
+          }}
         >
-          <Tile token="🡠" xs={12}></Tile>
-          <Tile token="clear" xs={12} />
-          <Tile token="+" xs={12} />
-          <Tile token="-" xs={12} />
-          <Tile token="x" xs={12} />
-          <Tile token="mod" xs={12} />
-          <Tile token="÷" xs={12} />
-        </Grid>
+          {
+            //making the operations appear appear based on the functions
+            Object.keys(nonOperationFunctions).concat(Object.keys(operationFunctions)).map(token => {
+
+              if(token === "=") return null;
+
+              return <Tile key={token} token={token} xs={12}></Tile>
+            })
+          }
+        </Box>
       </Box>
     </CalculatorContext.Provider>
   );

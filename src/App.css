@@ -13,3 +13,6 @@
 .user-select-none{
   user-select: none !important;
 }
+.calculator{
+  flex-wrap:wrap;
+}
